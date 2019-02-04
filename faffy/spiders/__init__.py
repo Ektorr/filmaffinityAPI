@@ -92,8 +92,8 @@ class FilmDataSpider(scrapy.Spider):
 				))
 		movie.genres = genres
 
-		movie.summary = response.css('.movie-info dd[itemprop="description"]::text').get().strip()
-
+		movie.summary = unicode(response.css('.movie-info dd[itemprop="description"]::text').get().strip()).encode('utf-8')
+		print(movie.summary)
 		awards = [] 
 
 		for award_p in response.css('.movie-info dd.award').css('.margin-bottom'):
@@ -105,15 +105,3 @@ class FilmDataSpider(scrapy.Spider):
 		movie.awards = awards
 		
 		yield movie.__dict__
-		#logger.info(movie.name)
-		#logger.info(movie.__dict__)
-
-		"""
-		for title in response.css('.movie-info dd::text'):
-			logger.info('------------')
-			logger.info(title.get().strip())
-
-			#yield {'title': title.css('a ::text').get()}
-		for next_page in response.css('div.prev-post > a'):
-			yield response.follow(next_page, self.parse)
-		"""
