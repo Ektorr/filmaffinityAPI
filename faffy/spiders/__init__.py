@@ -2,10 +2,31 @@
 import scrapy
 import logging
 import re 
+import simplejson as sj
+from unidecode import unidecode
 
 class Movie(object):
 	def __str__(self):
 		return ', '.join(['{key}={value}'.format(key=key, value=self.__dict__.get(key)) for key in self.__dict__])
+
+	def todict(self):
+		return dict(
+				name=self.name,
+				rating=self.rating,
+				year=self.year,				
+				duration=self.duration,
+				country=self.country,
+				directors=self.directors,
+				summary=unidecode(self.summary),
+				actors=self.actors,
+				producer=self.producer,
+				photography=self.photography,
+				musicians=self.musicians,
+				images=self.images,
+				guionists=self.guionists,
+				genres=self.genres,
+				awards=self.awards,
+			)
 
 class FilmDataSpider(scrapy.Spider):
 	logger = logging.getLogger('FilmDataSpider')
@@ -20,12 +41,11 @@ class FilmDataSpider(scrapy.Spider):
 
 	def __init__(self, film_id='', *args, **kwargs): 
 		super(FilmDataSpider, self).__init__(*args, **kwargs) 
-		self.logger.info('---------------------')
-		self.logger.info(film_id)
 		self.start_urls = ['https://www.filmaffinity.com/es/film{0}.html'.format(film_id)] 
 	
 	def parse(self, response):
 		logger = logging.getLogger('parse')
+		
 		movie = Movie()
 
 		movie.rating = dict(
@@ -87,21 +107,20 @@ class FilmDataSpider(scrapy.Spider):
 		genres = []
 		for genre_p in response.css('.movie-info dd')[10].css('a'):
 			genres.append(dict(					
-					name=genre_p.css('::text').get(),
-					url="%s%s" % (self.url, genre_p.css('::attr(href)').get())
+					name=unidecode(genre_p.css('::text').get()),
+					url=genre_p.css('::attr(href)').get()
 				))
 		movie.genres = genres
 
-		movie.summary = unicode(response.css('.movie-info dd[itemprop="description"]::text').get().strip()).encode('utf-8')
-		print(movie.summary)
+		movie.summary = response.css('.movie-info dd[itemprop="description"]::text').get().strip()
+		
 		awards = [] 
-
 		for award_p in response.css('.movie-info dd.award').css('.margin-bottom'):
 			awards.append(dict(					
-					name=re.search('</a>:(.*)</div>', award_p.extract()).group(1).strip(),
+					name=unidecode(re.search('</a>:(.*)</div>', award_p.extract()).group(1).strip()),
 					year=award_p.css('a::text').get(),
 					url=award_p.css('a::attr(href)').get()
 				))
 		movie.awards = awards
-		
-		yield movie.__dict__
+
+		yield movie.todict()
