@@ -37,6 +37,7 @@ def film_by_name(film_name, **args):
 			movies = content['items'][0]['movies']
 			if len(movies) > 0:
 				return film_by_id(movies[0])
+				
 		return jsonify({'status':False, 'msg':"No films"})
 	except Exception, e:
 		print(e)
