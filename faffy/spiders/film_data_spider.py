@@ -96,7 +96,7 @@ class FilmDataSpider(scrapy.Spider):
 		actors = []
 		for actor_p in response.css('.movie-info dd').css("span[itemprop='actor'] a[itemprop='url']"):
 			actors.append(dict(					
-					name=actor_p.css("span[itemprop='name']::text").get(),
+					name=unidecode(actor_p.css("span[itemprop='name']::text").get()),
 					url="%s%s" % (self.url, actor_p.css('::attr(href)').get())
 				))
 		movie.actors = actors
