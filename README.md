@@ -9,7 +9,6 @@ Filmaffinity API Spider developed with scrappy. Flask will be used to serve the 
 
 	Both will return a JSON with the data film.
 	
-
 	```
 	{
 	  "content": [
