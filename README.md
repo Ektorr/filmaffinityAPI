@@ -1,7 +1,7 @@
 # filmaffinityAPI
 Filmaffinity API Spider developed with scrappy. Flask will be used to serve the info.
 
-###Services:
+### Services:
 	* Search film by name:
 		As: /api/by_name/el%20padrino
 	* Search film by ID:
@@ -22,106 +22,6 @@ Filmaffinity API Spider developed with scrappy. Flask will be used to serve the 
 	          "name": "Nino Manfredi", 
 	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Nino%20Manfredi"
 	        }, 
-	        {
-	          "name": "Emma Penella", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Emma%20Penella"
-	        }, 
-	        {
-	          "name": "Jose Luis Lopez Vazquez", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Jos%C3%A9%20Luis%20L%C3%B3pez%20V%C3%A1zquez"
-	        }, 
-	        {
-	          "name": "Angel Alvarez", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=%C3%81ngel%20%C3%81lvarez"
-	        }, 
-	        {
-	          "name": "Maria Luisa Ponte", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Mar%C3%ADa%20Luisa%20Ponte"
-	        }, 
-	        {
-	          "name": "Maria Isbert", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Mar%C3%ADa%20Isbert"
-	        }, 
-	        {
-	          "name": "Julia Caba Alba", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Julia%20Caba%20Alba"
-	        }, 
-	        {
-	          "name": "Guido Alberti", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Guido%20Alberti"
-	        }, 
-	        {
-	          "name": "Erasmo Pascual", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Erasmo%20Pascual"
-	        }, 
-	        {
-	          "name": "Xan das Bolas", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Xan%20das%20Bolas"
-	        }, 
-	        {
-	          "name": "Jose Orjas", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Jos%C3%A9%20Orjas"
-	        }, 
-	        {
-	          "name": "Jose Maria Prada", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Jos%C3%A9%20Mar%C3%ADa%20Prada"
-	        }, 
-	        {
-	          "name": "Felix Fernandez", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=F%C3%A9lix%20Fern%C3%A1ndez"
-	        }, 
-	        {
-	          "name": "Antonio Ferrandis", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Antonio%20Ferrandis"
-	        }, 
-	        {
-	          "name": "Lola Gaos", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Lola%20Gaos"
-	        }, 
-	        {
-	          "name": "Alfredo Landa", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Alfredo%20Landa"
-	        }, 
-	        {
-	          "name": "Jose Sazatornil", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Jos%C3%A9%20Sazatornil"
-	        }, 
-	        {
-	          "name": "Agustin Gonzalez", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Agust%C3%ADn%20Gonz%C3%A1lez"
-	        }, 
-	        {
-	          "name": "Chus Lampreave", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Chus%20Lampreave"
-	        }, 
-	        {
-	          "name": "Jose Luis Coll", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Jos%C3%A9%20Luis%20Coll"
-	        }, 
-	        {
-	          "name": "Jose Cordero", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Jos%C3%A9%20Cordero"
-	        }, 
-	        {
-	          "name": "Pedro Beltran", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Pedro%20Beltr%C3%A1n"
-	        }, 
-	        {
-	          "name": "Dolores Garcia", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Dolores%20Garc%C3%ADa"
-	        }, 
-	        {
-	          "name": "Emilio Laguna", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Emilio%20Laguna"
-	        }, 
-	        {
-	          "name": "Enrique Tusquets", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Enrique%20Tusquets"
-	        }, 
-	        {
-	          "name": "Enrique Pelayo", 
-	          "url": "https://www.filmaffinity.com/es/search.php?stype=cast&sn&stext=Enrique%20Pelayo"
-	        }
 	      ], 
 	      "awards": [
 	        {
