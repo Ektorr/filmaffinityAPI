@@ -3,12 +3,12 @@ Filmaffinity API Spider developed with scrappy. Flask will be used to serve the 
 
 ### Services:
 	* Search film by name:
-		As: /api/by_name/el%20padrino
+		As: /api/name/el%20padrino
 	* Search film by ID:
 		/api/636548/ 
 
 	Both will return a JSON with the data film.
-	
+
 	```
 	{
 	  "content": [
