@@ -63,16 +63,16 @@ def topics(**args):
 
 @app.route("/api/topic/<id_topic>")
 @app.route("/api/topic/<id_topic>/<limit>/")
-def films_by_topic(id_topic, limit=1, **args):
-	#try:	
-	# Return a list with all the topics -> https://www.filmaffinity.com/es/topics.php
-	#print('{0}?spider_name=faffy_search_spider&url={1}&limit={2}'.format(scrapy_url, list_topic_url.format(id_topic), limit))
-	r = requests.get('{0}?spider_name=faffy_search_spider&url={1}&limit={2}'.format(scrapy_url, list_topic_url.format(id_topic), limit), headers={'Content-type': 'application/json; charset=utf-8'})
-	#json = {"request":{"url":"{0}".format(list_topic_url.format(id_topic))}, "spider_name": "faffy_search_spider"}
-	#r = requests.get(scrapy_url,  headers={'Content-type': 'application/json; charset=utf-8'}, data="%s" %json)
-	content = sj.loads(r._content)
+def films_by_topic(id_topic, limit='', **args):
+	try:	
+		# Return a list all the films from a topic -> https://www.filmaffinity.com/es/topics.php
+		r = requests.post(scrapy_url,  headers={'Content-type': 'application/json; charset=utf-8'}, data=sj.dumps({"request":{"url":"{0}&limit={1}".format(list_topic_url.format(id_topic), limit)}, "spider_name": "faffy_search_spider"}))
+		content = sj.loads(r._content)
 
-	if content['status'] == 'ok':
-		return jsonify({'status':True, 'topics': content['items'][0]})
+		if content['status'] == 'ok':
+			return jsonify({'status':True, 'topics': content['items'][0]})
 
-	return jsonify({'status':False, 'msg':"No films"})
+		return jsonify({'status':False, 'msg':"No films"})
+	except Exception, e:
+		print(e)
+		return jsonify({'status':False})
