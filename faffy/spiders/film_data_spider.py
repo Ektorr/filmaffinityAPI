@@ -5,20 +5,18 @@ import re
 import simplejson as sj
 from unidecode import unidecode
 
-import re 
-from unidecode import unidecode
-
 class Movie(object):
 	def __str__(self):
 		return ', '.join(['{key}={value}'.format(key=key, value=self.__dict__.get(key)) for key in self.__dict__])
 
 	def todict(self):
 		return dict(
-				name=self.name,
+				id=self.id,
+				name=unidecode(self.name),
 				rating=self.rating,
 				year=self.year,				
 				duration=self.duration,
-				country=self.country,
+				country=unidecode(self.country),
 				directors=self.directors,
 				summary=unidecode(self.summary),
 				actors=self.actors,
@@ -53,22 +51,26 @@ class FilmDataSpider(scrapy.Spider):
 		movie = Movie()
 
 		movie.url = response.request.url
+		
+		movie.id = int(re.search('/film(.*).html', movie.url).group(1).strip())
 
 		movie.rating = dict(
-					note=float(response.css('#movie-rat-avg::text').get().strip().replace(",", ".")),
-					critics=int(response.css('[itemprop="ratingCount"]::text').get().strip().replace(".", ""))
+					note=float(response.css('#movie-rat-avg::text').get().strip().replace(",", ".")) if response.css('#movie-rat-avg::text').get() else False,
+					critics=int(response.css('[itemprop="ratingCount"]::text').get().strip().replace(".", "")) if response.css('[itemprop="ratingCount"]::text').get() else False
 			)
 
 		movie.name = response.css('.movie-info dd::text')[0].get().strip()
 		movie.year = response.css('.movie-info dd[itemprop="datePublished"]::text').get().strip()
-		movie.duration = response.css('.movie-info dd[itemprop="duration"]::text').get().strip()
+		movie.duration = response.css('.movie-info dd[itemprop="duration"]::text').get().strip() if response.css('.movie-info dd[itemprop="duration"]::text').get() else False
 		movie.country  = response.css('.movie-info dd #country-img img::attr(title)').get().strip()
 
-		movie.images = dict(
-				small=response.css('[itemprop="image"]::attr(src)').get().strip().replace("mmed", "small"),
-				medium=response.css('[itemprop="image"]::attr(src)').get().strip(),
-				large=response.css('[itemprop="image"]::attr(src)').get().strip().replace("mmed", "large")
-			)
+		movie.images = dict()
+		if response.css('[itemprop="image"]::attr(src)').get():
+			movie.images = dict(
+					small=response.css('[itemprop="image"]::attr(src)').get().strip().replace("mmed", "small"),
+					medium=response.css('[itemprop="image"]::attr(src)').get().strip(),
+					large=response.css('[itemprop="image"]::attr(src)').get().strip().replace("mmed", "large")
+				)
 
 		directors = []
 		for director_p in response.css('.movie-info dd.directors').css("span[itemprop='director'] a[itemprop='url']"):
@@ -80,17 +82,17 @@ class FilmDataSpider(scrapy.Spider):
 
 		guionists = []
 		for guionist_p in response.xpath("//dt[contains(text(), '%s')]/following-sibling::dd[1]/div/span/span/text()" % u'Guion'):
-			guionists.append(guionist_p.get())		
+			guionists.append(unidecode(guionist_p.get()))		
 		movie.guionists = guionists
 
 		musicians = []
 		for node_m_p in response.xpath("//dt[contains(text(), '%s')]/following-sibling::dd[1]/div/span/span/text()" % u'Música'):
-			musicians.append(node_m_p.get())
+			musicians.append(unidecode(node_m_p.get()))
 		movie.musicians = musicians
 
 		photography = []
 		for node_m_p in response.xpath("//dt[contains(text(), '%s')]/following-sibling::dd[1]/div/span/span/text()" % u'Fotografía'):
-			photography.append(node_m_p.get())		
+			photography.append(unidecode(node_m_p.get()))
 		movie.photography = photography
 
 		actors = []
@@ -133,4 +135,35 @@ class FilmDataSpider(scrapy.Spider):
 				))
 		movie.awards = awards
 
-		yield movie.todict()
+		yield scrapy.Request('https://www.filmaffinity.com/es/pro-reviews.php?movie-id={0}'.format(movie.id), callback=self.parse_reviews, meta={'movie': movie.todict()})
+
+	def parse_reviews(self, response):
+		movie = response.meta.get('movie')
+
+		critics = []
+		for n_critic in response.css('.pro-reviews table tbody tr'):
+			critics.append(dict(
+					author=unidecode(n_critic.css('.author div::text').get()) if n_critic.css('.author div::text').get() else '',
+					media=unidecode(n_critic.css('.author em::text').get()),
+					country=unidecode(n_critic.css('.c span::text').get()),
+					url=n_critic.css('.text a::attr(href)').get(),
+					text=unidecode(n_critic.css('.text a::text').get().replace("\"", '')),
+					status=n_critic.css('.c:last-child span::text').get(),
+					gender=n_critic.css('.gender span::text').get(),
+				))
+
+		movie.update({'critics': critics})
+
+		yield scrapy.Request('https://www.filmaffinity.com/es/evideos.php?movie_id={0}'.format(movie['id']), callback=self.parse_trailers, meta={'movie': movie})
+
+	def parse_trailers(self, response):
+		movie = response.meta.get('movie')
+
+		trailers = []
+		for n_trailer in response.css('#mt-content-cell iframe'):
+			if n_trailer.css('::attr(src)').get():
+				trailers.append(n_trailer.css('::attr(src)').get().strip())
+
+		movie.update({'trailers': trailers})
+
+		yield movie

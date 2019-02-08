@@ -21,7 +21,6 @@ def film_by_id(film_id):
 	try:		
 		r = requests.get('{0}?spider_name=filmdataspider&url={1}'.format(scrapy_url, film_url.format(film_id)), headers={'Content-type': 'application/json; charset=utf-8'})				
 		content = sj.loads(r._content)
-
 		if content['status'] == 'ok':
 			return jsonify({'status': True, 'content': content['items']})
 
@@ -65,7 +64,7 @@ def topics(**args):
 @app.route("/api/topic/<id_topic>/<limit>/")
 def films_by_topic(id_topic, limit='', **args):
 	try:	
-		# Return a list all the films from a topic -> https://www.filmaffinity.com/es/topics.php
+		# Return a list all the films from a topic
 		r = requests.post(scrapy_url,  headers={'Content-type': 'application/json; charset=utf-8'}, data=sj.dumps({"request":{"url":"{0}&limit={1}".format(list_topic_url.format(id_topic), limit)}, "spider_name": "faffy_search_spider"}))
 		content = sj.loads(r._content)
 

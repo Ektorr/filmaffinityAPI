@@ -19,7 +19,11 @@ class FaffySearchSpider(scrapy.Spider):
         if response.meta.get('id_movies'):
             id_movies = response.meta.get('id_movies')
 
-        limit = int(re.search('limit=(.*)', response.request.url).group(1).strip())
+        try:
+            limit = int(re.search('limit=(.*)', response.request.url).group(1).strip())
+        except:
+            limit = 1
+
 
         if '.html' in response_url:
             id_movies.append(re.search('/film(.*).html', response_url).group(1).strip())

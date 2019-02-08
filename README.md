@@ -6,6 +6,12 @@ Filmaffinity API Spider developed with scrappy. Flask will be used to serve the 
 		As: /api/name/el%20padrino
 	* Search film by ID:
 		/api/636548/ 
+	* Get a list with all the topics:
+		/api/topics
+	* Get a list with all the films IDS of a determinated topic:
+		/api/films_by_topic/<id_topic>/<limit>
+
+		limit = 0, all the films of a selected topic
 
 	Both will return a JSON with the data film.
 
