@@ -14,6 +14,7 @@ class Movie(object):
 		return dict(
 				id=self.id,
 				name=unidecode(self.name),
+				spanish_name=self.spanish_name if self.spanish_name else '',
 				rating=self.rating,
 				year=self.year,				
 				duration=self.duration,
@@ -65,6 +66,8 @@ class FilmDataSpider(scrapy.Spider):
 			)
 
 		movie.name = response.css('.movie-info dd::text')[0].get().strip()
+		movie.spanish_name = response.xpath("//dt[contains(text(), '%s')]/following-sibling::dd[1]/ul/li[1]/text()" % u'AKA').get()
+
 		movie.year = response.css('.movie-info dd[itemprop="datePublished"]::text').get().strip()
 		movie.duration = response.css('.movie-info dd[itemprop="duration"]::text').get().strip() if response.css('.movie-info dd[itemprop="duration"]::text').get() else False
 		movie.country  = response.css('.movie-info dd #country-img img::attr(title)').get().strip()
