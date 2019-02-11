@@ -6,6 +6,7 @@ import simplejson as sj
 from unidecode import unidecode
 
 class Movie(object):
+	
 	def __str__(self):
 		return ', '.join(['{key}={value}'.format(key=key, value=self.__dict__.get(key)) for key in self.__dict__])
 
@@ -35,6 +36,10 @@ class FilmDataSpider(scrapy.Spider):
 
 	name = 'filmdataspider'
 	url  = 'https://www.filmaffinity.com'
+
+	url_trailers = 'https://www.filmaffinity.com/es/evideos.php?movie_id='
+	url_reviews  = 'https://www.filmaffinity.com/es/pro-reviews.php?movie-id='
+	url_images   = 'https://www.filmaffinity.com/es/filmimages.php?movie_id='
 	
 	#custom_settings = {
     #   'FEED_FORMAT' : 'csv',
@@ -135,7 +140,7 @@ class FilmDataSpider(scrapy.Spider):
 				))
 		movie.awards = awards
 
-		yield scrapy.Request('https://www.filmaffinity.com/es/pro-reviews.php?movie-id={0}'.format(movie.id), callback=self.parse_reviews, meta={'movie': movie.todict()})
+		yield scrapy.Request('{0}{1}'.format(self.url_reviews, movie.id), callback=self.parse_reviews, meta={'movie': movie.todict()})
 
 	def parse_reviews(self, response):
 		movie = response.meta.get('movie')
@@ -147,14 +152,14 @@ class FilmDataSpider(scrapy.Spider):
 					media=unidecode(n_critic.css('.author em::text').get()),
 					country=unidecode(n_critic.css('.c span::text').get()),
 					url=n_critic.css('.text a::attr(href)').get(),
-					text=unidecode(n_critic.css('.text a::text').get().replace("\"", '')),
+					text=unidecode(n_critic.css('.text a::text').get().replace("\"", '')) if n_critic.css('.text a::text').get() else '',
 					status=n_critic.css('.c:last-child span::text').get(),
 					gender=n_critic.css('.gender span::text').get(),
 				))
 
 		movie.update({'critics': critics})
 
-		yield scrapy.Request('https://www.filmaffinity.com/es/evideos.php?movie_id={0}'.format(movie['id']), callback=self.parse_trailers, meta={'movie': movie})
+		yield scrapy.Request('{0}{1}'.format(self.url_trailers, movie['id']), callback=self.parse_trailers, meta={'movie': movie})
 
 	def parse_trailers(self, response):
 		movie = response.meta.get('movie')
@@ -165,5 +170,69 @@ class FilmDataSpider(scrapy.Spider):
 				trailers.append(n_trailer.css('::attr(src)').get().strip())
 
 		movie.update({'trailers': trailers})
+
+		yield scrapy.Request('{0}{1}'.format(self.url_images, movie['id']), callback=self.parse_images, meta={'movie': movie})		
+
+	def parse_images(self, response):
+		movie = response.meta.get('movie')
+
+		images = {}
+
+		posters = []
+		for n_poster in response.css('#type_imgs_2 div.colorbox-image a'):
+			posters.append(n_poster.css('a::attr(href)').get())
+		images['posters'] = posters
+
+		frames = []
+		for n_frame in response.css('#type_imgs_9 div.colorbox-image a'):
+			frames.append(n_frame.css('a::attr(href)').get())
+		images['frames'] = frames
+
+		promo = []
+		for n_promo in response.css('#type_imgs_8 div.colorbox-image a'):
+			promo.append(n_promo.css('a::attr(href)').get())
+		images['promo'] = promo
+
+		wallpapers = []
+		for n_wp in response.css('#type_imgs_3 div.colorbox-image a'):
+			wallpapers.append(n_wp.css('a::attr(href)').get())
+		images['wallpapers'] = wallpapers
+
+		bluray = []
+		for n_br in response.css('#type_imgs_7 div.colorbox-image a'):
+			bluray.append(n_br.css('a::attr(href)').get())
+		images['bluray'] = bluray
+
+		dvd = []
+		for n_dvd in response.css('#type_imgs_5 div.colorbox-image a'):
+			dvd.append(n_dvd.css('a::attr(href)').get())
+		images['dvd'] = dvd
+
+		vhs = []
+		for n_vhs in response.css('#type_imgs_6 div.colorbox-image a'):
+			vhs.append(n_vhs.css('a::attr(href)').get())
+		images['vhs'] = vhs
+
+		events = []
+		for n_events in response.css('#type_imgs_11 div.colorbox-image a'):
+			events.append(n_events.css('a::attr(href)').get())
+		images['events'] = events
+
+		bso = []
+		for n_bso in response.css('#type_imgs_12 div.colorbox-image a'):
+			bso.append(n_bso.css('a::attr(href)').get())
+		images['bso'] = bso
+
+		making_of = []
+		for n_mak_of in response.css('#type_imgs_13 div.colorbox-image a'):
+			making_of.append(n_mak_of.css('a::attr(href)').get())
+		images['making_of'] = making_of
+
+		others = []
+		for n_others in response.css('#type_imgs_14 div.colorbox-image a'):
+			others.append(n_others.css('a::attr(href)').get())
+		images['others'] = others
+
+		movie.update({'images': images})
 
 		yield movie
